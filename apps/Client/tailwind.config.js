@@ -13,13 +13,13 @@ export default {
           tertiary: '#171717', /* Dark gray */
         },
         accent: {
-          primary: '#a855f7', /* Purple-500 (brightened slightly for dark mode) */
-          hover: '#9333ea', /* Purple-600 */
-          light: '#3b0764', /* Purple-950 for subtle active backgrounds */
+          primary: '#f97316', /* Orange-500 */
+          hover: '#ea580c', /* Orange-600 */
+          light: '#431407', /* Orange-950 for subtle active backgrounds */
         },
         border: {
           subtle: 'rgba(255,255,255,0.08)',
-          strong: 'rgba(168,85,247,0.3)',
+          strong: 'rgba(249,115,22,0.3)',
         },
         text: {
           primary: '#f8fafc', /* Slate 50 */

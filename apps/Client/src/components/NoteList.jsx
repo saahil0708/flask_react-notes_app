@@ -1,7 +1,29 @@
-import React from 'react';
-import { Search } from 'lucide-react';
+import React, { useState } from 'react';
+import { Search, Plus, CheckSquare, Trash2, Check } from 'lucide-react';
 
-const NoteList = ({ notes, activeNoteId, onNoteSelect }) => {
+const NoteList = ({ notes, activeNoteId, workspaceName, onNoteSelect, onAddNote, onDeleteNotes }) => {
+  const [isSelectMode, setIsSelectMode] = useState(false);
+  const [selectedIds, setSelectedIds] = useState([]);
+
+  const toggleSelectMode = () => {
+    setIsSelectMode(!isSelectMode);
+    setSelectedIds([]);
+  };
+
+  const toggleSelection = (id) => {
+    if (selectedIds.includes(id)) {
+      setSelectedIds(selectedIds.filter(i => i !== id));
+    } else {
+      setSelectedIds([...selectedIds, id]);
+    }
+  };
+
+  const handleDelete = () => {
+    if (selectedIds.length > 0) {
+      onDeleteNotes(selectedIds);
+      toggleSelectMode();
+    }
+  };
   return (
     <aside className="w-[400px] h-screen flex flex-col bg-bg-secondary border-r border-border-subtle z-10 shrink-0">
       <div className="p-8 pb-4">
@@ -13,25 +35,78 @@ const NoteList = ({ notes, activeNoteId, onNoteSelect }) => {
             className="w-full bg-bg-primary border border-border-subtle py-2.5 pl-11 pr-4 rounded-full text-sm focus:border-accent-primary focus:ring-4 focus:ring-accent-primary/10 transition-all text-text-primary placeholder:text-text-muted outline-none shadow-sm"
           />
         </div>
-        <h2 className="text-3xl font-bold mb-4 text-text-primary tracking-tight">Notes</h2>
+        <div className="flex items-center justify-between mb-4">
+          {isSelectMode ? (
+            <>
+              <span className="text-sm font-medium text-text-primary">{selectedIds.length} selected</span>
+              <div className="flex items-center gap-2">
+                <button 
+                  onClick={handleDelete}
+                  disabled={selectedIds.length === 0}
+                  className="w-8 h-8 rounded-full bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-500 hover:bg-red-500 hover:text-white transition-all disabled:opacity-50"
+                  title="Delete Selected"
+                >
+                  <Trash2 size={16} />
+                </button>
+                <button 
+                  onClick={toggleSelectMode}
+                  className="px-3 py-1.5 rounded-full bg-bg-tertiary border border-border-subtle text-text-secondary hover:text-text-primary transition-all text-sm font-medium"
+                >
+                  Cancel
+                </button>
+              </div>
+            </>
+          ) : (
+            <>
+              <h2 className="text-3xl font-bold text-text-primary tracking-tight">{workspaceName}</h2>
+              <div className="flex items-center gap-2">
+                <button 
+                  onClick={toggleSelectMode}
+                  className="w-8 h-8 rounded-full bg-bg-primary border border-border-subtle flex items-center justify-center text-text-muted hover:text-text-primary hover:border-accent-primary transition-all shadow-sm"
+                  title="Select multiple"
+                >
+                  <CheckSquare size={16} />
+                </button>
+                <button 
+                  onClick={onAddNote}
+                  className="w-8 h-8 rounded-full bg-bg-primary border border-border-subtle flex items-center justify-center text-text-primary hover:text-accent-primary hover:border-accent-primary transition-all shadow-sm"
+                  title="New Note"
+                >
+                  <Plus size={16} />
+                </button>
+              </div>
+            </>
+          )}
+        </div>
       </div>
       
       <div className="flex-1 overflow-y-auto px-6 pb-8 flex flex-col gap-4 custom-scrollbar">
         {notes.map(note => {
-          const isActive = activeNoteId === note.id;
+          const isActive = activeNoteId === note.id && !isSelectMode;
+          const isSelected = selectedIds.includes(note.id);
           return (
             <div 
               key={note.id} 
               className={`p-5 shrink-0 rounded-2xl cursor-pointer transition-all border relative overflow-hidden group shadow-sm hover:shadow-md ${
-                isActive 
-                  ? 'bg-accent-primary text-white border-accent-primary shadow-[0_0_20px_rgba(168,85,247,0.3)]' 
-                  : 'bg-bg-primary border-border-subtle hover:border-accent-primary/50 hover:bg-bg-tertiary/50'
+                isSelected 
+                  ? 'bg-accent-primary/20 border-accent-primary shadow-[0_0_20px_rgba(249,115,22,0.1)]'
+                  : isActive 
+                    ? 'bg-accent-primary text-white border-accent-primary shadow-[0_0_20px_rgba(249,115,22,0.3)]' 
+                    : 'bg-bg-primary border-border-subtle hover:border-accent-primary/50 hover:bg-bg-tertiary/50'
               }`}
-              onClick={() => onNoteSelect(note.id)}
+              onClick={() => isSelectMode ? toggleSelection(note.id) : onNoteSelect(note.id)}
             >
-              {/* Dot indicator */}
-              <div className="absolute top-5 right-5 w-3 h-3 rounded-full border-2 border-bg-primary flex items-center justify-center">
-                <div className={`w-1.5 h-1.5 rounded-full ${isActive ? 'bg-white' : 'bg-accent-primary'}`}></div>
+              {/* Dot / Checkbox indicator */}
+              <div className="absolute top-5 right-5 flex items-center justify-center transition-colors">
+                {isSelectMode ? (
+                  <div className={`w-5 h-5 rounded border flex items-center justify-center ${isSelected ? 'bg-accent-primary border-accent-primary text-white' : 'border-border-subtle bg-bg-primary'}`}>
+                    {isSelected && <Check size={14} />}
+                  </div>
+                ) : (
+                  <div className={`w-3 h-3 rounded-full border-2 flex items-center justify-center ${isActive ? 'border-white' : 'border-bg-primary'}`}>
+                    <div className={`w-1.5 h-1.5 rounded-full ${isActive ? 'bg-white' : 'bg-accent-primary'}`}></div>
+                  </div>
+                )}
               </div>
               
               <h3 className={`text-base font-bold mb-2 pr-6 ${isActive ? 'text-white' : 'text-text-primary'}`}>
