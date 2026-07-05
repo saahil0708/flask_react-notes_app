@@ -1,0 +1,50 @@
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face{
+    font-family: "GT Flexa Lt";
+    src: url("https://db.onlinewebfonts.com/t/b88ced40599ee76946d2aa71611109b4.eot");
+    src: url("https://db.onlinewebfonts.com/t/b88ced40599ee76946d2aa71611109b4.eot?#iefix")format("embedded-opentype"),
+        url("https://db.onlinewebfonts.com/t/b88ced40599ee76946d2aa71611109b4.woff")format("woff"),
+        url("https://db.onlinewebfonts.com/t/b88ced40599ee76946d2aa71611109b4.woff2")format("woff2"),
+        url("https://db.onlinewebfonts.com/t/b88ced40599ee76946d2aa71611109b4.ttf")format("truetype"),
+        url("https://db.onlinewebfonts.com/t/b88ced40599ee76946d2aa71611109b4.svg#GT Flexa Lt")format("svg");
+    font-weight:normal;
+    font-style:normal;
+    font-display:swap;
+}
+
+@layer base {
+    body {
+        @apply bg-bg-primary text-text-primary overflow-hidden antialiased font-main;
+    }
+}
+
+@layer utilities {
+    /* Custom Scrollbar for dark theme */
+    ::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 8px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+        background: rgba(255, 255, 255, 0.2);
+    }
+}
+
+
+* {
+    font-family: "GT Flexa Lt";
+}
