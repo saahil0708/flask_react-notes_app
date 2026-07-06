@@ -3,11 +3,6 @@ from flask import jsonify, g
 from flask_jwt_extended import verify_jwt_in_request, get_jwt_identity
 
 def require_auth(fn):
-    """
-    Express-style middleware to protect routes.
-    It verifies the JWT cookie and attaches the user_id to the global 'g' object 
-    (which is Flask's equivalent of 'req.user').
-    """
     @wraps(fn)
     def wrapper(*args, **kwargs):
         try:

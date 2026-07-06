@@ -1,5 +1,13 @@
 from flask import request, jsonify, g
-from src.Services.notes_service import create_note, get_notes_for_workspace, update_note, delete_notes
+from src.Services.notes_service import (
+    create_note, 
+    get_notes_for_workspace, 
+    update_note, 
+    delete_notes,
+    get_trashed_notes,
+    restore_notes,
+    permanently_delete_notes
+)
 
 def add_note_controller():
     user_id = g.user_id
@@ -26,6 +34,7 @@ def edit_note_controller(note_id):
     return jsonify(response_data), status_code
 
 def remove_notes_controller():
+    """Moves notes to the trash."""
     user_id = g.user_id
     data = request.get_json()
     
@@ -33,4 +42,29 @@ def remove_notes_controller():
         return jsonify({"error": "note_ids array is required"}), 400
         
     response_data, status_code = delete_notes(data.get("note_ids"), user_id)
+    return jsonify(response_data), status_code
+
+def get_trashed_notes_controller():
+    user_id = g.user_id
+    response_data, status_code = get_trashed_notes(user_id)
+    return jsonify(response_data), status_code
+
+def restore_notes_controller():
+    user_id = g.user_id
+    data = request.get_json()
+    
+    if not data or not data.get("note_ids"):
+        return jsonify({"error": "note_ids array is required"}), 400
+        
+    response_data, status_code = restore_notes(data.get("note_ids"), user_id)
+    return jsonify(response_data), status_code
+
+def permanently_delete_notes_controller():
+    user_id = g.user_id
+    data = request.get_json()
+    
+    if not data or not data.get("note_ids"):
+        return jsonify({"error": "note_ids array is required"}), 400
+        
+    response_data, status_code = permanently_delete_notes(data.get("note_ids"), user_id)
     return jsonify(response_data), status_code
