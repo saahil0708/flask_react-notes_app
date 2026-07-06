@@ -20,23 +20,11 @@ def register_user(data):
     db.user.insert_one(user_doc)
     return {"message": "User registered successfully"}, 201
 
-def login_user(data):
+def authenticate_user(email, password):
     db = get_db()
-    user = db.user.find_one({"email": data.get("email")})
+    user = db.user.find_one({"email": email})
     
-    if not user or not check_password_hash(user["password"], data.get("password")):
-        return {"error": "Invalid email or password"}, 401
-        
-    # Generate JWT
-    access_token = create_access_token(identity=str(user["_id"]))
+    if user and check_password_hash(user["password"], password):
+        return user
     
-    # Return user data and token (controller handles setting the cookie)
-    return {
-        "message": "Login successful",
-        "user": {
-            "id": str(user["_id"]),
-            "user_name": user["user_name"],
-            "email": user["email"]
-        },
-        "token": access_token
-    }, 200
+    return None

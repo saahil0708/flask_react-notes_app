@@ -5,9 +5,10 @@ from src.Config.db_config import connect_db
 import os
 from dotenv import load_dotenv
 
-from src.Controllers.auth_controller import auth_bp
-from src.Controllers.workspace_controller import workspace_bp
-from src.Controllers.notes_controller import notes_bp
+# Import blueprints from Routes
+from src.Routes.auth_routes import auth_bp
+from src.Routes.workspace_routes import workspace_bp
+from src.Routes.notes_routes import notes_bp
 
 load_dotenv()
 
