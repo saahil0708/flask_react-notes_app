@@ -9,5 +9,9 @@ dependencies = [
     "flask-cors>=6.0.5",
     "flask-jwt-extended>=4.7.4",
     "mongoengine>=0.29.3",
+    "pymongo>=4.17.0",
     "python-dotenv>=1.2.2",
 ]
+
+[tool.pyright]
+extraPaths = ["."]

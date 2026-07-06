@@ -14,7 +14,6 @@ const initialWorkspaces = [
     { id: 'w5', label: 'Questions', icon: 'HelpCircle' },
     { id: 'w6', label: 'Dashboard', icon: 'LayoutDashboard' },
     { id: 'w7', label: 'Development', icon: 'Code' },
-    { id: 'w8', label: 'Swift', icon: 'Code' }
 ];
 
 // Dummy data for initial state
@@ -23,32 +22,32 @@ const initialNotes = [
         id: 1,
         title: 'Grocery list / Stores',
         content: 'Bread Flour - Instant Dry Yeast- Extra-virgin Olive Oil, 5 banana shallots - 4 garlic cloves.',
-        time: '1 min',
-        location: 'San Francisco, CA',
+        time: '07-08-2025',
+        location: 'Durgapur, WB',
         tags: ['shopping', 'food']
     },
     {
         id: 2,
         title: 'Books to read 🌶️',
         content: 'Cheers to the books we\'ve been meaning to read all these years and should probably start at some point.',
-        time: '5 min',
-        location: '',
+        time: '07-08-2025',
+        location: 'Durgapur, WB',
         tags: ['ideas', 'to-dos', 'morning']
     },
     {
         id: 3,
         title: 'Write down your ideas 💡',
         content: '"Sometimes, on Mondays, when servers at A16 are announcing the specials, you can almost feel the excitement...',
-        time: '1 day',
-        location: 'San Francisco, CA',
+        time: '07-08-2025',
+        location: 'Durgapur, WB',
         tags: ['ideas', 'work']
     },
     {
         id: 4,
         title: 'Curried Carrot Soup',
         content: '#recipes/savory #recipes/soups #recipessavorymains Curried Carrot and Fennel Soup with Turmeric and Ora...',
-        time: '2 days',
-        location: '',
+        time: '07-08-2025',
+        location: 'Durgapur, WB',
         tags: ['recipes', 'savory', 'soups']
     }
 ];
