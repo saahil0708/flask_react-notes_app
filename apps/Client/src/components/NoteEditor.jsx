@@ -1,15 +1,42 @@
-import React, { useState } from 'react';
-import { Pin, Download, MoreHorizontal, User, Plus, Type, Share2, Lightbulb, UserRound, Settings, Save, Check, X } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Pin, Download, X, Settings, Save, Check, Type, Loader2 } from 'lucide-react';
 
-const NoteEditor = ({ note, onUpdate }) => {
+const NoteEditor = ({ note, onUpdate, onSave }) => {
     const [newTag, setNewTag] = useState('');
     const [isSaving, setIsSaving] = useState(false);
+    const [hasChanges, setHasChanges] = useState(false);
 
-    if (!note) return null;
+    // Reset hasChanges when the selected note changes
+    useEffect(() => {
+        setHasChanges(false);
+    }, [note?.id]);
 
-    const handleSave = () => {
+    if (!note) {
+        return (
+            <main className="flex-1 flex flex-col items-center justify-center h-screen bg-bg-primary relative z-0">
+                <div className="flex flex-col items-center text-center opacity-40">
+                    <div className="w-24 h-24 rounded-full bg-bg-tertiary border border-border-subtle flex items-center justify-center mb-6">
+                        <Type size={32} className="text-text-muted" />
+                    </div>
+                    <h2 className="text-2xl font-bold text-text-primary mb-2 tracking-tight">No Note Selected</h2>
+                    <p className="text-text-muted max-w-sm">Select a note from the sidebar or create a new one to start writing.</p>
+                </div>
+            </main>
+        );
+    }
+
+    const handleChange = (updatedNote) => {
+        setHasChanges(true);
+        onUpdate(updatedNote);
+    };
+
+    const handleSave = async () => {
         setIsSaving(true);
-        setTimeout(() => setIsSaving(false), 2000); // Simulate network request delay
+        if (onSave) {
+            await onSave(note);
+            setHasChanges(false);
+        }
+        setIsSaving(false);
     };
 
     const handleAddTagSubmit = () => {
@@ -23,7 +50,7 @@ const NoteEditor = ({ note, onUpdate }) => {
         const uniqueNewTags = splitTags.filter(t => !currentTags.includes(t));
         
         if (uniqueNewTags.length > 0) {
-            onUpdate({ ...note, tags: [...currentTags, ...uniqueNewTags] });
+            handleChange({ ...note, tags: [...currentTags, ...uniqueNewTags] });
         }
         setNewTag('');
     };
@@ -37,7 +64,7 @@ const NoteEditor = ({ note, onUpdate }) => {
     
     const handleRemoveTag = (tagToRemove) => {
         const tags = note.tags || [];
-        onUpdate({ ...note, tags: tags.filter(t => t !== tagToRemove) });
+        handleChange({ ...note, tags: tags.filter(t => t !== tagToRemove) });
     };
 
     return (
@@ -47,14 +74,6 @@ const NoteEditor = ({ note, onUpdate }) => {
                 <div className="flex items-center gap-6 text-text-muted">
                     <Pin size={18} className="cursor-pointer hover:text-text-primary transition-colors" />
                     <Download size={18} className="cursor-pointer hover:text-text-primary transition-colors" />
-                </div>
-                
-                <div className="flex items-center gap-6">
-
-                    <Settings size={18} className="text-text-muted cursor-pointer hover:text-text-primary transition-colors" />
-                    <div className="w-8 h-8 rounded-full bg-bg-tertiary border border-border-subtle flex items-center justify-center overflow-hidden cursor-pointer hover:border-accent-primary transition-all shadow-sm">
-                        <User size={16} className="text-text-primary" />
-                    </div>
                 </div>
             </header>
             
@@ -66,7 +85,7 @@ const NoteEditor = ({ note, onUpdate }) => {
                     <input
                         type="text"
                         value={note.title}
-                        onChange={(e) => onUpdate({ ...note, title: e.target.value })}
+                        onChange={(e) => handleChange({ ...note, title: e.target.value })}
                         placeholder="Untitled Note"
                         className="text-5xl font-bold text-text-primary tracking-tight mb-4 bg-transparent outline-none placeholder:text-text-muted w-full"
                     />
@@ -100,7 +119,7 @@ const NoteEditor = ({ note, onUpdate }) => {
                     
                     <textarea
                         value={note.content}
-                        onChange={(e) => onUpdate({ ...note, content: e.target.value })}
+                        onChange={(e) => handleChange({ ...note, content: e.target.value })}
                         placeholder="Start typing your note here..."
                         className="text-lg text-text-secondary/70 leading-relaxed italic mb-12 bg-transparent outline-none resize-none w-full min-h-[400px] placeholder:text-text-muted/50"
                     />
@@ -113,14 +132,23 @@ const NoteEditor = ({ note, onUpdate }) => {
             <div className="absolute bottom-10 right-10 flex gap-4">
                 <button 
                     onClick={handleSave}
+                    disabled={!hasChanges || isSaving}
                     className={`h-12 px-6 rounded-full font-bold shadow-[0_4px_20px_rgba(0,0,0,0.3)] transition-all flex items-center gap-3 ${
-                        isSaving 
-                            ? 'bg-green-500 text-white scale-105 shadow-[0_4px_25px_rgba(34,197,94,0.4)]' 
-                            : 'bg-accent-primary text-white hover:bg-accent-light hover:shadow-[0_4px_25px_rgba(249,115,22,0.4)]'
+                        !hasChanges && !isSaving
+                            ? 'bg-bg-tertiary text-text-muted cursor-not-allowed shadow-none'
+                            : isSaving 
+                                ? 'bg-accent-primary opacity-80 text-white shadow-[0_4px_25px_rgba(249,115,22,0.4)]' 
+                                : 'bg-accent-primary text-white hover:bg-accent-light hover:shadow-[0_4px_25px_rgba(249,115,22,0.4)]'
                     }`}
                 >
-                    {isSaving ? <Check size={18} /> : <Save size={18} />}
-                    {isSaving ? 'Saved!' : 'Save Note'}
+                    {isSaving ? (
+                        <Loader2 size={18} className="animate-spin" />
+                    ) : !hasChanges ? (
+                        <Check size={18} />
+                    ) : (
+                        <Save size={18} />
+                    )}
+                    {isSaving ? 'Saving...' : !hasChanges ? 'Saved' : 'Save Note'}
                 </button>
             </div>
         </main>

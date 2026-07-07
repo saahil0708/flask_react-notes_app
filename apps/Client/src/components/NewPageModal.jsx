@@ -51,8 +51,8 @@ const NewPageModal = ({ isOpen, onClose, onCreate, initialData }) => {
   useEffect(() => {
     if (isOpen) {
         if (initialData) {
-            setName(initialData.label);
-            setSelectedIcon(initialData.icon);
+            setName(initialData.name || initialData.label || '');
+            setSelectedIcon(initialData.icon || 'FileText');
         } else {
             setName('');
             setSelectedIcon('FileText');
@@ -73,7 +73,7 @@ const NewPageModal = ({ isOpen, onClose, onCreate, initialData }) => {
     if (!name.trim()) return;
     
     onCreate({
-      id: initialData?.id,
+      id: initialData?.id || initialData?.id,
       name: name.trim(),
       icon: selectedIcon
     });

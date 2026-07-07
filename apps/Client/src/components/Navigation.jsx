@@ -1,7 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import * as LucideIcons from 'lucide-react';
+import Skeleton from '@mui/material/Skeleton';
 
-const { Leaf, Copy, Download, Trash2, Plus, MoreHorizontal, Edit2 } = LucideIcons;
+const { Leaf, Copy, Download, Trash2, Plus, MoreHorizontal, Edit2, Folder } = LucideIcons;
 
 const NavItem = ({ icon: Icon, label, isActive, hasMore, onClick, onEdit, onDelete }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -62,15 +63,34 @@ const NavItem = ({ icon: Icon, label, isActive, hasMore, onClick, onEdit, onDele
   );
 };
 
-const Navigation = ({ workspaces = [], activeWorkspaceId, onWorkspaceSelect, onNewWorkspaceClick, onEditWorkspace, onDeleteWorkspace }) => {
+const Navigation = ({ 
+  workspaces = [], 
+  isLoading = false,
+  activeWorkspaceId, 
+  onWorkspaceSelect, 
+  onNewWorkspaceClick, 
+  onEditWorkspace, 
+  onDeleteWorkspace,
+  user,
+  onLogout 
+}) => {
   return (
     <nav className="w-64 h-screen flex flex-col bg-bg-primary border-r border-border-subtle z-20 shrink-0">
-      {/* Logo */}
-      <div className="flex items-center gap-3 p-6 mb-2">
-        <div className="w-8 h-8 rounded-lg bg-bg-tertiary flex items-center justify-center border border-border-subtle shrink-0">
-          <Leaf size={18} className="text-orange-400 fill-orange-400" />
+      {/* Profile / Logo Area */}
+      <div className="flex items-center justify-between p-6 mb-2">
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 rounded-lg bg-bg-tertiary flex items-center justify-center border border-border-subtle shrink-0">
+            <Leaf size={18} className="text-orange-400 fill-orange-400" />
+          </div>
+          <div className="flex flex-col">
+            <span className="font-bold text-sm text-text-primary leading-tight truncate w-32">
+              Awsmd
+            </span>
+            <span className="text-[10px] text-text-muted truncate w-32">
+              Workspace
+            </span>
+          </div>
         </div>
-        <span className="font-bold text-lg text-text-primary mt-[2px]">Awsmd</span>
       </div>
 
       <div className="flex-1 overflow-y-auto px-4 custom-scrollbar flex flex-col gap-6">
@@ -85,20 +105,35 @@ const Navigation = ({ workspaces = [], activeWorkspaceId, onWorkspaceSelect, onN
         <div>
           <h3 className="text-xs font-bold text-text-muted uppercase tracking-wider mb-3 px-3">Workspace</h3>
           <div className="flex flex-col gap-1">
-            {workspaces.map(workspace => {
-              const IconComponent = LucideIcons[workspace.icon] || LucideIcons.FileText;
-              return (
-                <NavItem 
-                  key={workspace.id}
-                  icon={IconComponent} 
-                  label={workspace.label} 
-                  isActive={activeWorkspaceId === workspace.id} 
-                  onClick={() => onWorkspaceSelect?.(workspace.id)}
-                  onEdit={() => onEditWorkspace?.(workspace)}
-                  onDelete={() => onDeleteWorkspace?.(workspace.id)}
-                />
-              );
-            })}
+            {isLoading ? (
+              <>
+                <div className="px-3 py-2"><Skeleton variant="rounded" height={32} sx={{ bgcolor: 'rgba(255,255,255,0.05)', borderRadius: '8px' }} /></div>
+                <div className="px-3 py-2"><Skeleton variant="rounded" height={32} sx={{ bgcolor: 'rgba(255,255,255,0.05)', borderRadius: '8px' }} /></div>
+                <div className="px-3 py-2"><Skeleton variant="rounded" height={32} sx={{ bgcolor: 'rgba(255,255,255,0.05)', borderRadius: '8px' }} /></div>
+              </>
+            ) : workspaces.length === 0 ? (
+              <div className="px-3 py-6 mt-2 flex flex-col items-center text-center opacity-60 border border-dashed border-border-subtle rounded-xl mx-2">
+                <div className="w-10 h-10 rounded-full bg-bg-tertiary flex items-center justify-center mb-2">
+                  <Folder size={16} className="text-text-muted" />
+                </div>
+                <p className="text-xs text-text-muted">No workspaces yet</p>
+              </div>
+            ) : (
+              workspaces.map(workspace => {
+                const IconComponent = LucideIcons[workspace.icon] || LucideIcons.FileText;
+                return (
+                  <NavItem 
+                    key={workspace.id}
+                    icon={IconComponent} 
+                    label={workspace.name} 
+                    isActive={activeWorkspaceId === workspace.id} 
+                    onClick={() => onWorkspaceSelect?.(workspace.id)}
+                    onEdit={() => onEditWorkspace?.(workspace)}
+                    onDelete={() => onDeleteWorkspace?.(workspace.id)}
+                  />
+                );
+              })
+            )}
           </div>
         </div>
       </div>

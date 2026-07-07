@@ -1,6 +1,7 @@
 from flask import Flask, jsonify
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager
+from datetime import timedelta
 from src.Config.db_config import connect_db
 import os
 from dotenv import load_dotenv
@@ -21,6 +22,8 @@ app.config["JWT_SECRET_KEY"] = os.getenv("JWT_SECRET_KEY")
 app.config["JWT_TOKEN_LOCATION"] = ["cookies"]
 app.config["JWT_COOKIE_SECURE"] = False  # Set to True in production (HTTPS only)
 app.config["JWT_COOKIE_CSRF_PROTECT"] = False # Disabling for simplicity during dev, enable in prod!
+app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=7)
+app.config["JWT_SESSION_COOKIE"] = False
 
 jwt = JWTManager(app)
 

@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { Search, Plus, CheckSquare, Trash2, Check } from 'lucide-react';
+import Skeleton from '@mui/material/Skeleton';
 
-const NoteList = ({ notes, activeNoteId, workspaceName, onNoteSelect, onAddNote, onDeleteNotes }) => {
+const NoteList = ({ notes, isLoading = false, activeNoteId, workspaceName, onNoteSelect, onAddNote, onDeleteNotes }) => {
   const [isSelectMode, setIsSelectMode] = useState(false);
   const [selectedIds, setSelectedIds] = useState([]);
 
@@ -81,52 +82,83 @@ const NoteList = ({ notes, activeNoteId, workspaceName, onNoteSelect, onAddNote,
       </div>
       
       <div className="flex-1 overflow-y-auto px-6 pb-8 flex flex-col gap-4 custom-scrollbar">
-        {notes.map(note => {
-          const isActive = activeNoteId === note.id && !isSelectMode;
-          const isSelected = selectedIds.includes(note.id);
-          return (
-            <div 
-              key={note.id} 
-              className={`p-5 shrink-0 rounded-2xl cursor-pointer transition-all border relative overflow-hidden group shadow-sm hover:shadow-md ${
-                isSelected 
-                  ? 'bg-accent-primary/20 border-accent-primary shadow-[0_0_20px_rgba(249,115,22,0.1)]'
-                  : isActive 
-                    ? 'bg-accent-primary text-white border-accent-primary shadow-[0_0_20px_rgba(249,115,22,0.3)]' 
-                    : 'bg-bg-primary border-border-subtle hover:border-accent-primary/50 hover:bg-bg-tertiary/50'
-              }`}
-              onClick={() => isSelectMode ? toggleSelection(note.id) : onNoteSelect(note.id)}
-            >
-              {/* Dot / Checkbox indicator */}
-              <div className="absolute top-5 right-5 flex items-center justify-center transition-colors">
-                {isSelectMode ? (
-                  <div className={`w-5 h-5 rounded border flex items-center justify-center ${isSelected ? 'bg-accent-primary border-accent-primary text-white' : 'border-border-subtle bg-bg-primary'}`}>
-                    {isSelected && <Check size={14} />}
-                  </div>
-                ) : (
-                  <div className={`w-3 h-3 rounded-full border-2 flex items-center justify-center ${isActive ? 'border-white' : 'border-bg-primary'}`}>
-                    <div className={`w-1.5 h-1.5 rounded-full ${isActive ? 'bg-white' : 'bg-accent-primary'}`}></div>
-                  </div>
-                )}
-              </div>
-              
-              <h3 className={`text-base font-bold mb-2 pr-6 ${isActive ? 'text-white' : 'text-text-primary'}`}>
-                {note.title || 'Untitled Note'}
-              </h3>
-              <p className={`text-sm line-clamp-2 mb-4 leading-relaxed ${isActive ? 'text-white/80' : 'text-text-secondary'}`}>
-                {note.content.substring(0, 100) || 'No additional text'}
-              </p>
-              
-              <div className="flex justify-between items-center">
-                <span className={`text-xs ${isActive ? 'text-white/70' : 'text-text-muted'}`}>
-                  {note.time || '1 min'}
-                </span>
-                <span className={`text-xs font-medium ${isActive ? 'text-white' : 'text-accent-primary'}`}>
-                  {note.location || 'San Francisco, CA'}
-                </span>
-              </div>
+        {isLoading ? (
+          <>
+            <div className="p-5 rounded-2xl bg-bg-primary border border-border-subtle overflow-hidden">
+               <Skeleton variant="text" width="60%" height={24} sx={{ bgcolor: 'rgba(255,255,255,0.05)', mb: 1 }} />
+               <Skeleton variant="text" width="100%" height={16} sx={{ bgcolor: 'rgba(255,255,255,0.05)' }} />
+               <Skeleton variant="text" width="80%" height={16} sx={{ bgcolor: 'rgba(255,255,255,0.05)', mb: 2 }} />
+               <div className="flex justify-between">
+                   <Skeleton variant="text" width="20%" height={14} sx={{ bgcolor: 'rgba(255,255,255,0.05)' }} />
+                   <Skeleton variant="text" width="30%" height={14} sx={{ bgcolor: 'rgba(255,255,255,0.05)' }} />
+               </div>
             </div>
-          );
-        })}
+            <div className="p-5 rounded-2xl bg-bg-primary border border-border-subtle overflow-hidden">
+               <Skeleton variant="text" width="70%" height={24} sx={{ bgcolor: 'rgba(255,255,255,0.05)', mb: 1 }} />
+               <Skeleton variant="text" width="95%" height={16} sx={{ bgcolor: 'rgba(255,255,255,0.05)' }} />
+               <Skeleton variant="text" width="60%" height={16} sx={{ bgcolor: 'rgba(255,255,255,0.05)', mb: 2 }} />
+               <div className="flex justify-between">
+                   <Skeleton variant="text" width="20%" height={14} sx={{ bgcolor: 'rgba(255,255,255,0.05)' }} />
+                   <Skeleton variant="text" width="30%" height={14} sx={{ bgcolor: 'rgba(255,255,255,0.05)' }} />
+               </div>
+            </div>
+          </>
+        ) : notes.length === 0 ? (
+          <div className="flex-1 flex flex-col items-center justify-center text-center px-4 py-20 opacity-60">
+             <div className="w-16 h-16 rounded-full bg-bg-tertiary border border-border-subtle flex items-center justify-center mb-4 shadow-sm">
+                 <Search size={24} className="text-text-muted" />
+             </div>
+             <p className="text-text-primary font-medium mb-1 tracking-tight">No notes found</p>
+             <p className="text-sm text-text-muted">Create a new note to get started.</p>
+          </div>
+        ) : (
+          notes.map(note => {
+            const isActive = activeNoteId === note.id && !isSelectMode;
+            const isSelected = selectedIds.includes(note.id);
+            return (
+              <div 
+                key={note.id} 
+                className={`p-5 shrink-0 rounded-2xl cursor-pointer transition-all border relative overflow-hidden group shadow-sm hover:shadow-md ${
+                  isSelected 
+                    ? 'bg-accent-primary/20 border-accent-primary shadow-[0_0_20px_rgba(249,115,22,0.1)]'
+                    : isActive 
+                      ? 'bg-accent-primary text-white border-accent-primary shadow-[0_0_20px_rgba(249,115,22,0.3)]' 
+                      : 'bg-bg-primary border-border-subtle hover:border-accent-primary/50 hover:bg-bg-tertiary/50'
+                }`}
+                onClick={() => isSelectMode ? toggleSelection(note.id) : onNoteSelect(note.id)}
+              >
+                {/* Dot / Checkbox indicator */}
+                <div className="absolute top-5 right-5 flex items-center justify-center transition-colors">
+                  {isSelectMode ? (
+                    <div className={`w-5 h-5 rounded border flex items-center justify-center ${isSelected ? 'bg-accent-primary border-accent-primary text-white' : 'border-border-subtle bg-bg-primary'}`}>
+                      {isSelected && <Check size={14} />}
+                    </div>
+                  ) : (
+                    <div className={`w-3 h-3 rounded-full border-2 flex items-center justify-center ${isActive ? 'border-white' : 'border-bg-primary'}`}>
+                      <div className={`w-1.5 h-1.5 rounded-full ${isActive ? 'bg-white' : 'bg-accent-primary'}`}></div>
+                    </div>
+                  )}
+                </div>
+                
+                <h3 className={`text-base font-bold mb-2 pr-6 ${isActive ? 'text-white' : 'text-text-primary'}`}>
+                  {note.title || 'Untitled Note'}
+                </h3>
+                <p className={`text-sm line-clamp-2 mb-4 leading-relaxed ${isActive ? 'text-white/80' : 'text-text-secondary'}`}>
+                  {note.content.substring(0, 100) || 'No additional text'}
+                </p>
+                
+                <div className="flex justify-between items-center">
+                  <span className={`text-xs ${isActive ? 'text-white/70' : 'text-text-muted'}`}>
+                    {note.time || '1 min'}
+                  </span>
+                  <span className={`text-xs font-medium ${isActive ? 'text-white' : 'text-accent-primary'}`}>
+                    {note.location || 'San Francisco, CA'}
+                  </span>
+                </div>
+              </div>
+            );
+          })
+        )}
       </div>
     </aside>
   );
